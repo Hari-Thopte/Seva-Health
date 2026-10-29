@@ -118,17 +118,12 @@ export default function GovernmentDepartmentPage() {
         destination: data.target,
         type: 'मोबाईल SMS',
         message: data.message,
-        devOtp: data.devOtp,
         gatewayNotice: data.gatewayNotice,
         gatewayCode: data.gatewayCode
       })
       setStep('otp')
       setResendTimer(30)
-      if (data.devOtp) {
-        setOtp(data.devOtp)
-      } else {
-        setOtp('')
-      }
+      setOtp('')
     } catch {
       setError('सर्व्हरशी संपर्क होऊ शकला नाही. कृपया पुन्हा प्रयत्न करा.')
     } finally {
@@ -786,21 +781,9 @@ export default function GovernmentDepartmentPage() {
                         </div>
                       )}
 
-                      {simulatedOtpNotice.devOtp ? (
-                        <div style={{ marginTop: 8, padding: '10px 12px', background: '#ecfdf5', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #a7f3d0' }}>
-                          <div>
-                            <div style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>प्रवेशासाठी लॉगिन OTP:</div>
-                            <span style={{ fontSize: 18, color: '#059669', fontWeight: 800, letterSpacing: 2 }}>
-                              {simulatedOtpNotice.devOtp}
-                            </span>
-                          </div>
-                          <span style={{ fontSize: 11, color: '#047857', background: '#d1fae5', padding: '3px 8px', borderRadius: 4, fontWeight: 600 }}>आपोआप भरला आहे ✓</span>
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 6, fontWeight: 600 }}>
-                          ✓ आपल्या मोबाईलवर SMS द्वारे खरा OTP पाठवला आहे. कृपया SMS तपासून तो खाली प्रविष्ट करा.
-                        </div>
-                      )}
+                      <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 8, fontWeight: 600 }}>
+                        ✓ आपल्या मोबाईलवर SMS द्वारे खरा OTP पाठवला आहे. कृपया SMS तपासून तो खाली प्रविष्ट करा.
+                      </div>
                     </div>
                   )}
 

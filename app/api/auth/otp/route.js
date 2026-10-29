@@ -171,11 +171,6 @@ export async function POST(request) {
         `\n\x1b[36m[AUTH OTP]\x1b[0m Worker: ${worker.name} | Target: ${targetDestination} | OTP: ${generatedOtp}\n`
       )
 
-      const isGatewaySent = smsResult && !smsResult.isSimulated
-
-      // Show devOtp whenever real SMS gateway didn't deliver, or test flag is active
-      const showDevOtp = (process.env.ALLOW_DEV_TEST_OTP === '1') || !isGatewaySent
-
       return NextResponse.json({
         success: true,
         message: isEmail
@@ -185,7 +180,6 @@ export async function POST(request) {
         isEmail,
         workerName: worker.name,
         role: worker.role,
-        ...(showDevOtp ? { devOtp: generatedOtp } : {}),
         gatewayNotice: smsResult?.gatewayMessage || null,
         gatewayCode: smsResult?.statusCode || null
       })
