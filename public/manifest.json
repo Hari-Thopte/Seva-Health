@@ -1,0 +1,17 @@
+{
+  "name": "सेवा आरोग्य — राष्ट्रीय आरोग्य अभियान",
+  "short_name": "सेवा आरोग्य",
+  "description": "आशा स्वयंसेविका व अंगणवाडी कार्यकर्तींसाठी मराठी ऑफलाइन डिजिटल सहाय्यक प्रणाली",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f8f5",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

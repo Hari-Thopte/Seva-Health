@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NORVA — The New Standard in Staffing</title>
+<meta name="description" content="AI driven speed. Expert curation. We mobilize verified crews to protect your schedule and your bottom line in high-consequence environments." />
+
+<!-- Inter Tight variable font -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ─── CSS custom properties ─── */
+:root {
+  --u: clamp(.72px, min(calc(100vw / 1440), calc(100vh / 960)), 1.5px);
+  --night:    #0f1626;
+  --ink:      #f4f6fa;
+  --ink72:    rgba(244,246,250,.72);
+  --ink46:    rgba(244,246,250,.46);
+  --pill-grey:#2a3245;
+  --lime:     #c6ff2e;
+  --cyan:     #3fd8ff;
+  --hair:     rgba(255,255,255,.22);
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  font-family: 'Inter Tight', sans-serif;
+  background: var(--night);
+  color: var(--ink);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Loader ─── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--night);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity .6s ease;
+}
+
+#loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-ring-wrap {
+  position: relative;
+  width: calc(200 * var(--u));
+  height: calc(200 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-ellipse {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(63, 216, 255, .35);
+}
+
+.loader-ellipse.wide {
+  width: 100%;
+  height: 60%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.loader-ellipse.circle {
+  width: 72%;
+  height: 72%;
+}
+
+.loader-mark {
+  position: relative;
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
+  animation: spin-mark 1.6s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-mark {
+    animation: none;
+  }
+}
+
+@keyframes spin-mark {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sq {
+  position: absolute;
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+  background: var(--cyan);
+  border-radius: calc(2 * var(--u));
+  box-shadow: 0 0 6px rgba(63, 216, 255, 0.6);
+}
+
+.sq:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+.sq:nth-child(2) { top: 15%; right: calc(3 * var(--u)); }
+.sq:nth-child(3) { bottom: 15%; right: calc(3 * var(--u)); }
+.sq:nth-child(4) { bottom: 0; left: 50%; transform: translateX(-50%); }
+.sq:nth-child(5) { bottom: 15%; left: calc(3 * var(--u)); }
+.sq:nth-child(6) { top: 15%; left: calc(3 * var(--u)); }
+
+.mark-chevron {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lime);
+}
+
+.mark-chevron svg {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+}
+
+/* ─── Scroll track ─── */
+#track {
+  height: 420vh;
+  position: relative;
+}
+
+#scene {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Video ─── */
+#bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─── Overlay shades ─── */
+.shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.shade-top {
+  background: linear-gradient(to bottom,
+    rgba(15, 22, 38, .55) 0%,
+    rgba(15, 22, 38, 0) 34%);
+}
+
+.shade-bottom {
+  background: linear-gradient(to top,
+    rgba(15, 22, 38, .50) 0%,
+    rgba(15, 22, 38, 0) 30%);
+}
+
+/* ─── Nav (fixed, 58u tall, three columns) ─── */
+#nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(58 * var(--u));
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 calc(36 * var(--u));
+  border-bottom: 1px solid var(--hair);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  background: rgba(15, 22, 38, .18);
+}
+
+.nav-left {
+  display: flex;
+  gap: calc(28 * var(--u));
+  align-items: center;
+}
+
+.nav-link {
+  font-size: calc(11 * var(--u));
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink72);
+  white-space: nowrap;
+  transition: color .2s;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: var(--ink);
+}
+
+.wordmark {
+  font-size: calc(19 * var(--u));
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.nav-right {
+  display: flex;
+  gap: calc(10 * var(--u));
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.pill {
+  height: calc(40 * var(--u));
+  padding: 0 calc(18 * var(--u));
+  border-radius: calc(40 * var(--u));
+  font-size: calc(11.5 * var(--u));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s;
+  white-space: nowrap;
+  border: none;
+}
+
+.pill:hover {
+  transform: translateY(-1px);
+}
+
+.pill-grey {
+  background: var(--pill-grey);
+  color: var(--ink);
+}
+
+.pill-grey:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .4);
+}
+
+.pill-lime {
+  background: var(--lime);
+  color: #0f1626;
+}
+
+.pill-lime:hover {
+  box-shadow: 0 4px 14px rgba(198, 255, 46, .45);
+}
+
+.lang-btn {
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid var(--hair);
+  color: var(--ink72);
+  font-size: calc(10 * var(--u));
+  font-weight: 600;
+  padding: calc(6 * var(--u)) calc(10 * var(--u));
+  border-radius: calc(20 * var(--u));
+  cursor: pointer;
+  margin-right: calc(4 * var(--u));
+  transition: all .2s;
+}
+
+.lang-btn:hover {
+  color: var(--ink);
+  border-color: var(--cyan);
+}
+
+/* ─── Perspective stage (fixed, centred, 92u from top, inside perspective: 900u stage) ─── */
+#stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  perspective: calc(900 * var(--u));
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ─── Hero copy ─── */
+#hero-copy {
+  position: absolute;
+  top: calc(92 * var(--u));
+  left: 0;
+  right: 0;
+  text-align: center;
+  transform-origin: center bottom;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.hero-headline {
+  font-size: calc(84 * var(--u));
+  font-weight: 600;
+  line-height: .96;
+  letter-spacing: -.045em;
+  color: var(--ink);
+}
+
+.hero-sub {
+  margin-top: calc(22 * var(--u));
+  font-size: calc(18 * var(--u));
+  font-weight: 400;
+  color: var(--ink72);
+  line-height: 1.55;
+}
+
+/* ─── Scroll cue & Play button ─── */
+#cue-controls-wrap {
+  position: fixed;
+  bottom: calc(36 * var(--u));
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  z-index: 10;
+  pointer-events: none;
+}
+
+#scroll-cue {
+  font-size: calc(11 * var(--u));
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ink72);
+  will-change: opacity;
+}
+
+#cue-text {
+  display: inline-block;
+  position: relative;
+  padding-bottom: 3px;
+}
+
+#cue-underline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--ink72);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+#play-glide-btn {
+  pointer-events: auto;
+  background: rgba(15, 22, 38, .75);
+  border: 1px solid rgba(63, 216, 255, .35);
+  color: var(--cyan);
+  font-size: calc(10.5 * var(--u));
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: calc(6 * var(--u)) calc(16 * var(--u));
+  border-radius: calc(20 * var(--u));
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  backdrop-filter: blur(8px);
+  transition: all .2s;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+}
+
+#play-glide-btn:hover {
+  background: rgba(63, 216, 255, .15);
+  border-color: var(--cyan);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ─── Process list (fixed, bottom left at 36u / 28u, 430u wide) ─── */
+#process {
+  position: fixed;
+  bottom: calc(36 * var(--u));
+  left: calc(28 * var(--u));
+  width: calc(430 * var(--u));
+  z-index: 10;
+  pointer-events: auto;
+  will-change: opacity, transform;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.proc-row {
+  display: grid;
+  grid-template-columns: calc(36 * var(--u)) 1fr;
+  gap: 0 calc(14 * var(--u));
+  border-top: 1px solid var(--hair);
+  padding: calc(10 * var(--u)) 0;
+  align-items: start;
+  cursor: pointer;
+}
+
+.proc-row:first-child {
+  border-top: none;
+}
+
+.proc-num {
+  font-size: calc(12.5 * var(--u));
+  font-weight: 600;
+  color: var(--ink72);
+  padding-top: calc(2 * var(--u));
+  transition: color .25s;
+}
+
+.proc-num-box {
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
+  background: var(--ink);
+  color: var(--night);
+  border-radius: calc(5 * var(--u));
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(11 * var(--u));
+  font-weight: 700;
+}
+
+.proc-row.active .proc-num {
+  display: none;
+}
+
+.proc-row.active .proc-num-box {
+  display: flex;
+}
+
+.proc-title {
+  font-size: calc(12.5 * var(--u));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink72);
+  transition: font-size .25s, color .25s;
+}
+
+.proc-row.active .proc-title {
+  font-size: calc(18 * var(--u));
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.proc-body-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .45s ease;
+  overflow: hidden;
+}
+
+.proc-row.active .proc-body-wrap {
+  grid-template-rows: 1fr;
+}
+
+.proc-body {
+  min-height: 0;
+}
+
+.proc-body-inner {
+  padding-top: calc(8 * var(--u));
+  padding-left: calc(12 * var(--u));
+  border-left: 1px solid var(--hair);
+  font-size: calc(13 * var(--u));
+  font-weight: 400;
+  color: var(--ink72);
+  line-height: 1.6;
+}
+
+/* ─── Phone (≤ 760px) ─── */
+@media (max-width: 760px) {
+  :root {
+    --u: 1px;
+  }
+  .nav-left {
+    display: none;
+  }
+  #nav {
+    grid-template-columns: auto 1fr;
+    padding: 0 16px;
+  }
+  .wordmark {
+    justify-self: start;
+  }
+  .nav-right {
+    justify-content: flex-end;
+  }
+  .pill {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 11px;
+  }
+  #hero-copy {
+    top: 96px;
+  }
+  .hero-headline {
+    font-size: clamp(38px, 11vw, 48px);
+    letter-spacing: -.03em;
+  }
+  .hero-sub {
+    font-size: 15px;
+    max-width: 34ch;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 16px;
+  }
+  #process {
+    left: 18px;
+    right: 18px;
+    width: auto;
+    bottom: 22px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader" role="status" aria-label="Loading NORVA">
+  <div class="loader-ring-wrap">
+    <div class="loader-ellipse wide"></div>
+    <div class="loader-ellipse circle"></div>
+    <div class="loader-mark" aria-hidden="true">
+      <div class="sq"></div>
+      <div class="sq"></div>
+      <div class="sq"></div>
+      <div class="sq"></div>
+      <div class="sq"></div>
+      <div class="sq"></div>
+      <div class="mark-chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV (fixed, 58u tall, three columns) -->
+<nav id="nav" aria-label="Main Navigation">
+  <div class="nav-left">
+    <a href="#industries" class="nav-link" id="nav-industries">OUR INDUSTRIES</a>
+    <a href="#mission" class="nav-link" id="nav-mission">OUR MISSION</a>
+  </div>
+  <div class="wordmark" id="wordmark" onclick="window.scrollTo({top:0,behavior:'smooth'})">NORVA</div>
+  <div class="nav-right">
+    <button class="lang-btn" id="lang-toggle" title="Toggle Language">मराठी</button>
+    <a href="#apply" class="pill pill-grey" id="nav-apply">APPLY</a>
+    <a href="#request" class="pill pill-lime" id="nav-request">REQUEST CREWS</a>
+  </div>
+</nav>
+
+<!-- SCROLL TRACK (420vh track holding a sticky 100vh scene with video) -->
+<div id="track">
+  <div id="scene">
+    <video
+      id="bg-video"
+      muted
+      playsinline
+      webkit-playsinline
+      preload="auto"
+      poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/33150b94-09f7-47da-a7c9-3ae76c2dd7eb.jpg"
+      src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/65fdef53-5686-4659-8761-52d61bf1a4f7.mp4"
+      aria-hidden="true"
+    ></video>
+    <div class="shade shade-top" aria-hidden="true"></div>
+    <div class="shade shade-bottom" aria-hidden="true"></div>
+  </div>
+</div>
+
+<!-- FIXED UI LAYER (perspective: 900u stage) -->
+<div id="stage" aria-hidden="true">
+  <div id="hero-copy">
+    <h1 class="hero-headline" id="hero-hl">
+      The New Standard<br />in Staffing
+    </h1>
+    <p class="hero-sub" id="hero-sb">
+      AI driven speed. Expert curation.<br />
+      We mobilize verified crews to protect your schedule and<br />
+      your bottom line in high-consequence environments.
+    </p>
+  </div>
+</div>
+
+<!-- SCROLL CUE & PLAY BUTTON -->
+<div id="cue-controls-wrap">
+  <button id="play-glide-btn" title="Watch full camera glide animation">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    </svg>
+    <span id="play-btn-text">Play Glide Animation</span>
+  </button>
+  <div id="scroll-cue" aria-label="Scroll to discover our process">
+    <span id="cue-text">
+      <span id="cue-label">SCROLL TO DISCOVER OUR PROCESS</span>
+      <span id="cue-underline"></span>
+    </span>
+  </div>
+</div>
+
+<!-- PROCESS LIST (fixed, bottom left at 36u / 28u, 430u wide) -->
+<aside id="process" aria-label="Four-step staffing process">
+
+  <div class="proc-row active" id="proc-01">
+    <span class="proc-num">01</span>
+    <span class="proc-num-box">01</span>
+    <div class="proc-content">
+      <div class="proc-title" id="p1-title">Activation, simplified</div>
+      <div class="proc-body-wrap">
+        <div class="proc-body">
+          <div class="proc-body-inner" id="p1-body">
+            One call starts mobilization. Craft, headcount and start date go straight to our vetted crews. No hand-offs. No escalations. Just boots on site within minutes.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proc-row" id="proc-02">
+    <span class="proc-num">02</span>
+    <span class="proc-num-box">02</span>
+    <div class="proc-content">
+      <div class="proc-title" id="p2-title">Cleared to count</div>
+      <div class="proc-body-wrap">
+        <div class="proc-body">
+          <div class="proc-body-inner" id="p2-body">
+            Every worker is screened before dispatch: compliance, background, certifications and fitness for duty, so the whole crew clears the gate on day one.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proc-row" id="proc-03">
+    <span class="proc-num">03</span>
+    <span class="proc-num-box">03</span>
+    <div class="proc-content">
+      <div class="proc-title" id="p3-title">Proven field match</div>
+      <div class="proc-body-wrap">
+        <div class="proc-body">
+          <div class="proc-body-inner" id="p3-body">
+            Tailored craft specialization and verified experience aligned directly with your high-risk project demands.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proc-row" id="proc-04">
+    <span class="proc-num">04</span>
+    <span class="proc-num-box">04</span>
+    <div class="proc-content">
+      <div class="proc-title" id="p4-title">Seamless arrival</div>
+      <div class="proc-body-wrap">
+        <div class="proc-body">
+          <div class="proc-body-inner" id="p4-body">
+            Turnkey staging, badged entry verification, and integrated logistics reporting from shift one.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<script>
+(function () {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function easeInOutQuad(t) {
+    t = clamp(t, 0, 1);
+    return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isRec = new URLSearchParams(location.search).get('rec') === '1';
+
+  const loader       = $('loader');
+  const track        = $('track');
+  const video        = $('bg-video');
+  const heroCopy     = $('hero-copy');
+  const cueControls  = $('cue-controls-wrap');
+  const scrollCue    = $('scroll-cue');
+  const cueUnder     = $('cue-underline');
+  const playGlideBtn = $('play-glide-btn');
+  const playBtnText  = $('play-btn-text');
+  const process      = $('process');
+  const proc01       = $('proc-01');
+  const proc02       = $('proc-02');
+  const proc03       = $('proc-03');
+  const proc04       = $('proc-04');
+  const langToggle   = $('lang-toggle');
+
+  /* Bilingual Content Toggle */
+  let currentLang = 'en';
+  const content = {
+    en: {
+      toggle: 'मराठी',
+      navInd: 'OUR INDUSTRIES',
+      navMis: 'OUR MISSION',
+      navApp: 'APPLY',
+      navReq: 'REQUEST CREWS',
+      hl: 'The New Standard<br />in Staffing',
+      sb: 'AI driven speed. Expert curation.<br />We mobilize verified crews to protect your schedule and<br />your bottom line in high-consequence environments.',
+      cue: 'SCROLL TO DISCOVER OUR PROCESS',
+      playBtn: 'Play Glide Animation',
+      playActive: 'Pause Animation',
+      p1t: 'Activation, simplified',
+      p1b: 'One call starts mobilization. Craft, headcount and start date go straight to our vetted crews. No hand-offs. No escalations. Just boots on site within minutes.',
+      p2t: 'Cleared to count',
+      p2b: 'Every worker is screened before dispatch: compliance, background, certifications and fitness for duty, so the whole crew clears the gate on day one.',
+      p3t: 'Proven field match',
+      p3b: 'Tailored craft specialization and verified experience aligned directly with your high-risk project demands.',
+      p4t: 'Seamless arrival',
+      p4b: 'Turnkey staging, badged entry verification, and integrated logistics reporting from shift one.'
+    },
+    mr: {
+      toggle: 'ENGLISH',
+      navInd: 'आमचे कार्यक्षेत्र',
+      navMis: 'आमचे ध्येय',
+      navApp: 'अर्ज करा',
+      navReq: 'कर्मचारी मागणी',
+      hl: 'कर्मचारी भरतीत<br />नवीन सुवर्ण मानक',
+      sb: 'कृत्रिम बुद्धिमत्ता (AI) आधारित गती. तज्ज्ञांची अचूक निवड.<br />उच्च-जोखीम कार्यक्षेत्रांत आपले वेळापत्रक आणि नफा<br />सुरक्षित ठेवण्यासाठी आम्ही प्रमाणित कुशल मनुष्यबळ तैनात करतो.',
+      cue: 'आमची कार्यपद्धती पाहण्यासाठी स्क्रोल करा',
+      playBtn: 'ऑटो ॲनिमेशन प्ले करा',
+      playActive: 'ॲनिमेशन थांबवा',
+      p1t: 'सक्रियीकरण, अत्यंत सोपे',
+      p1b: 'एका कॉलने सज्जता सुरू होते. आवश्यक कौशल्ये, संख्या आणि तारीख थेट आमच्या तपासलेल्या कुशल कामगारांपर्यंत पोहोचते. मध्यस्थ नाही, विलंब नाही. काही मिनिटांत प्रत्यक्ष कामावर हजेरी.',
+      p2t: 'कामासाठी पूर्ण पात्र',
+      p2b: 'कामावर पाठवण्यापूर्वी प्रत्येक कामगाराची संपूर्ण पडताळणी: कायदेशीर पूर्तता, पार्श्वभूमी तपासणी, प्रमाणपत्रे आणि शारीरिक तंदुरुस्ती — जेणेकरून पहिल्याच दिवशी संपूर्ण चमू थेट कामास सुरुवात करू शकेल.',
+      p3t: 'अचूक कार्यक्षेत्र जुळवणी',
+      p3b: 'कामाच्या अचूक तांत्रिक गरजा, परवाने आणि कठोर वेळापत्रकानुसार अनुभवी कारागिरांची अचूक निवड.',
+      p4t: 'सुलभ आणि तत्पर आगमन',
+      p4b: 'कामाच्या ठिकाणी थेट प्रवेश, डिजिटल हजेरी नोंदणी आणि पहिल्या मिनिटापासून सुरक्षित व्यवस्थापन.'
+    }
+  };
+
+  langToggle.addEventListener('click', () => {
+    currentLang = currentLang === 'en' ? 'mr' : 'en';
+    const c = content[currentLang];
+    langToggle.textContent = c.toggle;
+    $('nav-industries').textContent = c.navInd;
+    $('nav-mission').textContent = c.navMis;
+    $('nav-apply').textContent = c.navApp;
+    $('nav-request').textContent = c.navReq;
+    $('hero-hl').innerHTML = c.hl;
+    $('hero-sb').innerHTML = c.sb;
+    $('cue-label').textContent = c.cue;
+    if (!autoPlaying) playBtnText.textContent = c.playBtn;
+    $('p1-title').textContent = c.p1t;
+    $('p1-body').textContent = c.p1b;
+    $('p2-title').textContent = c.p2t;
+    $('p2-body').textContent = c.p2b;
+    $('p3-title').textContent = c.p3t;
+    $('p3-body').textContent = c.p3b;
+    $('p4-title').textContent = c.p4t;
+    $('p4-body').textContent = c.p4b;
+  });
+
+  /* Swap to 720p on narrow viewports */
+  if (window.innerWidth <= 900) {
+    video.src = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/9a30e5e9-9f03-4755-9bc1-7bcf1510aab3.mp4';
+  }
+
+  /* Prime video decoder on load */
+  let primed = false;
+  function primeVideo() {
+    if (primed) return;
+    primed = true;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        video.pause();
+      }).catch(() => {});
+    }
+  }
+
+  video.addEventListener('loadeddata', primeVideo, { once: true });
+  window.addEventListener('pointerdown', primeVideo, { once: true, passive: true });
+  window.addEventListener('scroll', primeVideo, { once: true, passive: true });
+  window.addEventListener('wheel', primeVideo, { once: true, passive: true });
+
+  /* Loader dismiss */
+  let loaderGone = false;
+  function dismissLoader() {
+    if (loaderGone) return;
+    loaderGone = true;
+    if (isRec) {
+      loader.remove();
+      return;
+    }
+    loader.classList.add('hidden');
+    setTimeout(() => {
+      if (loader.parentNode) loader.remove();
+    }, 700);
+  }
+
+  if (!isRec) {
+    video.addEventListener('loadeddata', () => setTimeout(dismissLoader, 350), { once: true });
+    setTimeout(dismissLoader, 3500);
+  } else {
+    loader.remove();
+  }
+
+  /* Video seek state */
+  let curTime = 0;
+  let seeking = false;
+  let pendingSeekTime = null;
+
+  video.addEventListener('seeking', () => { seeking = true; });
+  video.addEventListener('seeked', () => {
+    seeking = false;
+    if (pendingSeekTime !== null) {
+      const nextTime = pendingSeekTime;
+      pendingSeekTime = null;
+      if (Math.abs(video.currentTime - nextTime) > 1 / 60) {
+        try { video.currentTime = nextTime; } catch (e) {}
+      }
+    }
+  });
+
+  function seekVideoTo(target) {
+    if (seeking) {
+      pendingSeekTime = target;
+      return;
+    }
+    if (Math.abs(video.currentTime - target) > 1 / 60) {
+      try {
+        video.currentTime = target;
+      } catch (e) {}
+    }
+  }
+
+  function getProgress() {
+    const rect  = track.getBoundingClientRect();
+    const top   = -rect.top;
+    const range = track.offsetHeight - window.innerHeight;
+    return clamp(top / range, 0, 1);
+  }
+
+  function applyUI(p) {
+    const dur = (video.duration && !isNaN(video.duration) && video.duration > 0) ? video.duration : 5.04;
+
+    /* Video time */
+    const targetTime = p * (dur - 1 / 48);
+    curTime += reducedMotion ? (targetTime - curTime) : (targetTime - curTime) * 0.2;
+    seekVideoTo(curTime);
+
+    /* Headline tilt */
+    const h  = easeInOutQuad(clamp(p / .38, 0, 1));
+    const ty = -34 * h;
+    const rx =  62 * h;
+    const sc = 1 - .12 * h;
+    heroCopy.style.transform = `translateY(${ty}vh) rotateX(${rx}deg) scale(${sc})`;
+    heroCopy.style.opacity   = clamp(1 - (p - .10) / (.24 - .10), 0, 1);
+
+    /* Process list */
+    const pf = clamp((p - .08) / (.24 - .08), 0, 1);
+    process.style.opacity   = pf;
+    process.style.transform = `translateY(${(1 - pf) * 40}px)`;
+
+    /* Active step: Step 01 is active below p .62, and step 02 above it */
+    const setA = (r, on) => r.classList.toggle('active', on);
+    if (p < .62) {
+      setA(proc01, true); setA(proc02, false); setA(proc03, false); setA(proc04, false);
+    } else {
+      setA(proc01, false); setA(proc02, true); setA(proc03, false); setA(proc04, false);
+    }
+
+    /* Scroll cue */
+    cueUnder.style.transform = `scaleX(${clamp(1 - p / .10, 0, 1)})`;
+    cueControls.style.opacity = clamp(1 - (p - .04) / (.12 - .04), 0, 1);
+  }
+
+  /* Auto-Play Glide Animation Demo */
+  let autoPlaying = false;
+  let autoAnimId = null;
+
+  function stopAutoPlay() {
+    if (!autoPlaying) return;
+    autoPlaying = false;
+    if (autoAnimId) cancelAnimationFrame(autoAnimId);
+    playBtnText.textContent = content[currentLang].playBtn;
+  }
+
+  function startAutoPlay() {
+    if (autoPlaying) {
+      stopAutoPlay();
+      return;
+    }
+    primeVideo();
+    autoPlaying = true;
+    playBtnText.textContent = content[currentLang].playActive;
+    const durMs = 5040;
+    const trackH = track.offsetHeight - window.innerHeight;
+    const startY = window.scrollY;
+    const targetY = trackH;
+    const startTime = performance.now();
+
+    function step(now) {
+      if (!autoPlaying) return;
+      const elapsed = now - startTime;
+      const progress = clamp(elapsed / durMs, 0, 1);
+      const eased = easeInOutQuad(progress);
+      window.scrollTo(0, startY + (targetY - startY) * eased);
+
+      if (progress < 1) {
+        autoAnimId = requestAnimationFrame(step);
+      } else {
+        setTimeout(() => {
+          stopAutoPlay();
+        }, 800);
+      }
+    }
+    autoAnimId = requestAnimationFrame(step);
+  }
+
+  playGlideBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    startAutoPlay();
+  });
+
+  window.addEventListener('wheel', () => {
+    if (autoPlaying) stopAutoPlay();
+  }, { passive: true });
+
+  window.addEventListener('touchstart', () => {
+    if (autoPlaying) stopAutoPlay();
+  }, { passive: true });
+
+  /* Main animation loop */
+  function loop() {
+    if (!isRec) applyUI(getProgress());
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  /* Recorder mode (?rec=1) */
+  if (isRec) {
+    const dur = 5.04;
+    let startTs = null;
+    function recLoop(ts) {
+      if (!startTs) startTs = ts;
+      const elapsed = (ts - startTs) / 1000;
+      let p = elapsed < 0.55 ? 0
+            : elapsed < 0.55 + dur ? (elapsed - 0.55) / dur
+            : 1;
+      applyUI(p);
+      if (elapsed < 0.55 + dur + 0.5) requestAnimationFrame(recLoop);
+    }
+    requestAnimationFrame(recLoop);
+    window.__recTime = function (vid, t) {
+      const p = clamp(t / dur, 0, 1);
+      applyUI(p);
+      return p * (dur - 1 / 48);
+    };
+  }
+
+  applyUI(0);
+})();
+</script>
+
+<!-- ── FLOATING DOUBT CLEARING BOT ── -->
+<div id="hero-doubt-bot-launcher" style="position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+  <div id="hero-bot-badge" style="background:#0f1626;color:#3fd8ff;border:1px solid rgba(63,216,255,0.4);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.5);cursor:pointer;display:flex;align-items:center;gap:6px;">
+    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c6ff2e;"></span>
+    <span>शंका विचारा? (AI Bot)</span>
+  </div>
+  <button id="hero-bot-btn" type="button" aria-label="Open Doubt Assistant" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg, #1e3a8a 0%, #0f1626 100%);border:2px solid rgba(63,216,255,0.6);box-shadow:0 8px 30px rgba(0,0,0,0.5),0 0 20px rgba(63,216,255,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#3fd8ff;transition:all .25s ease;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="10" rx="3"></rect>
+      <circle cx="12" cy="5" r="2"></circle>
+      <path d="M12 7v4"></path>
+      <line x1="8" y1="16" x2="8.01" y2="16" stroke-width="3"></line>
+      <line x1="16" y1="16" x2="16.01" y2="16" stroke-width="3"></line>
+    </svg>
+  </button>
+</div>
+
+<div id="hero-bot-window" style="display:none;position:fixed;bottom:92px;right:24px;width:clamp(320px,92vw,400px);height:clamp(480px,75vh,580px);background:#0d1527;border:1px solid rgba(63,216,255,0.3);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,0.7),0 0 35px rgba(63,216,255,0.15);z-index:99999;flex-direction:column;overflow:hidden;font-family:'Inter Tight',sans-serif;">
+  <div style="padding:14px 18px;background:#090f1d;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(63,216,255,0.15);border:1px solid #3fd8ff;display:flex;align-items:center;justify-content:center;font-size:18px;"></div>
+      <div>
+        <div style="color:#f4f6fa;font-size:14px;font-weight:700;">आरोग्य मित्र AI सहाय्यक</div>
+        <div style="color:#c6ff2e;font-size:11px;display:flex;align-items:center;gap:4px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#c6ff2e;"></span>
+          <span>२४/७ डिजिटल शंका समाधान</span>
+        </div>
+      </div>
+    </div>
+    <button id="hero-bot-close" type="button" style="background:none;border:none;color:rgba(244,246,250,0.6);cursor:pointer;font-size:18px;"></button>
+  </div>
+
+  <div style="padding:8px 12px;background:rgba(15,22,38,0.7);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:6px;overflow-x:auto;white-space:nowrap;">
+    <button class="hchip" onclick="window.__askBot('गरोदर माता तपासणी ANC वेळापत्रक काय आहे?')"> गरोदर तपासणी</button>
+    <button class="hchip" onclick="window.__askBot('बाल लसीकरण वेळापत्रक सांगा')"> बाल लसीकरण</button>
+    <button class="hchip" onclick="window.__askBot('कुपोषण SAM आणि MAM कसे ओळखायचे?')">️ कुपोषण SAM/MAM</button>
+    <button class="hchip" onclick="window.__askBot('आपत्कालीन रुग्णवाहिका नंबर काय आहेत?')"> आपत्कालीन १०८/१०२</button>
+    <button class="hchip" onclick="window.__askBot('NORVA भरती आणि कार्यपद्धती काय आहे?')"> NORVA भरती</button>
+    <button class="hchip" onclick="window.__askBot('लॉगिन आणि OTP मदत सांगा')"> OTP मदत</button>
+  </div>
+
+  <div id="hero-bot-msgs" style="flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+    <div style="background:#162035;color:#f4f6fa;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.55;border:1px solid rgba(255,255,255,0.08);max-width:88%;">
+      नमस्कार!  मी आपला **आरोग्य मित्र AI सहाय्यक** आहे. आरोग्य मार्गदर्शक तत्त्वे, बाल लसीकरण किंवा NORVA स्टाफिंगबद्दल कोणतीही शंका असल्यास येथे विचारा!
+    </div>
+  </div>
+
+  <div style="padding:12px 14px;background:#090f1d;border-top:1px solid rgba(255,255,255,0.1);display:flex;gap:8px;">
+    <input id="hero-bot-input" type="text" placeholder="तुमची कोणतीही शंका विचारा..." style="flex:1;background:#131c2e;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 12px;color:#f4f6fa;font-size:13px;outline:none;" />
+    <button id="hero-bot-send" type="button" style="width:38px;height:38px;border-radius:10px;background:#c6ff2e;border:none;color:#0f1626;cursor:pointer;font-weight:700;"></button>
+  </div>
+</div>
+
+<style>
+.hchip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(244,246,250,0.85);font-size:11px;padding:4px 10px;border-radius:14px;cursor:pointer;flex-shrink:0;transition:all .2s;}
+.hchip:hover{border-color:#3fd8ff;color:#3fd8ff;}
+</style>
+
+<script>
+(function(){
+  const w = document.getElementById('hero-bot-window');
+  const btn = document.getElementById('hero-bot-btn');
+  const badge = document.getElementById('hero-bot-badge');
+  const close = document.getElementById('hero-bot-close');
+  const inp = document.getElementById('hero-bot-input');
+  const send = document.getElementById('hero-bot-send');
+  const msgs = document.getElementById('hero-bot-msgs');
+
+  function toggle() {
+    const isHidden = w.style.display === 'none' || !w.style.display;
+    w.style.display = isHidden ? 'flex' : 'none';
+    if (isHidden) { badge.style.display = 'none'; inp.focus(); }
+  }
+
+  btn.onclick = toggle;
+  badge.onclick = toggle;
+  close.onclick = () => { w.style.display = 'none'; };
+
+  async function ask(q) {
+    if (!q || !q.trim()) return;
+    const uDiv = document.createElement('div');
+    uDiv.style.cssText = 'align-self:flex-end;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;';
+    uDiv.textContent = q;
+    msgs.appendChild(uDiv);
+    inp.value = '';
+    msgs.scrollTop = msgs.scrollHeight;
+
+    const loadDiv = document.createElement('div');
+    loadDiv.style.cssText = 'color:#3fd8ff;font-size:12px;padding:4px;';
+    loadDiv.textContent = 'उत्तर तयार होत आहे...';
+    msgs.appendChild(loadDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    try {
+      const res = await fetch('/api/bot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, lang: 'mr' })
+      });
+      const data = await res.json();
+      loadDiv.remove();
+      const bDiv = document.createElement('div');
+      bDiv.style.cssText = 'background:#162035;color:#f4f6fa;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.55;border:1px solid rgba(255,255,255,0.08);max-width:88%;white-space:pre-wrap;';
+      bDiv.textContent = data.answer || 'माहिती मिळवण्यात अडचण आली.';
+      msgs.appendChild(bDiv);
+      msgs.scrollTop = msgs.scrollHeight;
+    } catch {
+      loadDiv.textContent = 'सर्व्हरशी संपर्क होऊ शकला नाही.';
+    }
+  }
+
+  window.__askBot = ask;
+  send.onclick = () => ask(inp.value);
+  inp.onkeydown = (e) => { if (e.key === 'Enter') ask(inp.value); };
+})();
+</script>
+</body>
+</html>
