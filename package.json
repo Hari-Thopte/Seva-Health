@@ -10,6 +10,9 @@
     "lint": "eslint",
     "package-zip": "node scripts/package-clean-zip.js"
   },
+  "engines": {
+    "node": ">=22.x"
+  },
   "dependencies": {
     "jose": "^6.2.13",
     "next": "16.4.2",
